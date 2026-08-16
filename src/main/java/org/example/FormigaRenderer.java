@@ -8,6 +8,8 @@ public class FormigaRenderer {
     private final PrimitiveMesh sphere;
     private final PrimitiveMesh cylinder;
 
+    private static final float FORMIGA_SCALE = 0.6f;
+
     public FormigaRenderer() {
 
         sphere =
@@ -28,22 +30,23 @@ public class FormigaRenderer {
         float rotation =
                 formiga.getRotationY();
 
-        
         // CABEÇA
 
         drawSphere(
                 shader,
                 pos,
                 rotation,
+
                 new Vector3f(
                         0f,
-                        0.17f,
-                        -0.25f
+                        0.09f * FORMIGA_SCALE,
+                        -0.14f * FORMIGA_SCALE
                 ),
+
                 new Vector3f(
-                        0.12f,
-                        0.12f,
-                        0.12f
+                        0.065f * FORMIGA_SCALE,
+                        0.065f * FORMIGA_SCALE,
+                        0.065f * FORMIGA_SCALE
                 )
         );
 
@@ -53,15 +56,17 @@ public class FormigaRenderer {
                 shader,
                 pos,
                 rotation,
+
                 new Vector3f(
                         0f,
-                        0.16f,
+                        0.08f * FORMIGA_SCALE,
                         0f
                 ),
+
                 new Vector3f(
-                        0.15f,
-                        0.15f,
-                        0.18f
+                        0.08f * FORMIGA_SCALE,
+                        0.08f * FORMIGA_SCALE,
+                        0.10f * FORMIGA_SCALE
                 )
         );
 
@@ -71,15 +76,17 @@ public class FormigaRenderer {
                 shader,
                 pos,
                 rotation,
+
                 new Vector3f(
                         0f,
-                        0.17f,
-                        0.28f
+                        0.09f * FORMIGA_SCALE,
+                        0.15f * FORMIGA_SCALE
                 ),
+
                 new Vector3f(
-                        0.19f,
-                        0.17f,
-                        0.25f
+                        0.10f * FORMIGA_SCALE,
+                        0.085f * FORMIGA_SCALE,
+                        0.13f * FORMIGA_SCALE
                 )
         );
 
@@ -90,7 +97,7 @@ public class FormigaRenderer {
                 pos,
                 rotation,
                 -1,
-                -0.16f
+                -0.08f * FORMIGA_SCALE
         );
 
         drawLeg(
@@ -106,7 +113,7 @@ public class FormigaRenderer {
                 pos,
                 rotation,
                 -1,
-                0.16f
+                0.08f * FORMIGA_SCALE
         );
 
         drawLeg(
@@ -114,7 +121,7 @@ public class FormigaRenderer {
                 pos,
                 rotation,
                 1,
-                -0.16f
+                -0.08f * FORMIGA_SCALE
         );
 
         drawLeg(
@@ -130,7 +137,7 @@ public class FormigaRenderer {
                 pos,
                 rotation,
                 1,
-                0.16f
+                0.08f * FORMIGA_SCALE
         );
 
         // ANTENAS
@@ -150,7 +157,7 @@ public class FormigaRenderer {
         );
     }
 
-    // ESFERA
+    // CORPO
 
     private void drawSphere(
             Shader shader,
@@ -193,7 +200,7 @@ public class FormigaRenderer {
         sphere.render();
     }
 
-    // PERNA
+    // PERNAS
 
     private void drawLeg(
             Shader shader,
@@ -205,8 +212,8 @@ public class FormigaRenderer {
 
         Vector3f localPosition =
                 new Vector3f(
-                        side * 0.15f,
-                        0.10f,
+                        side * 0.075f * FORMIGA_SCALE,
+                        0.045f * FORMIGA_SCALE,
                         z
                 );
 
@@ -230,9 +237,9 @@ public class FormigaRenderer {
                                         )
                         )
                         .scale(
-                                0.035f,
-                                0.20f,
-                                0.035f
+                                0.018f * FORMIGA_SCALE,
+                                0.09f * FORMIGA_SCALE,
+                                0.018f * FORMIGA_SCALE
                         );
 
         shader.setUniform(
@@ -252,7 +259,7 @@ public class FormigaRenderer {
         cylinder.render();
     }
 
-    // ANTENA
+    // ANTENAS
 
     private void drawAntenna(
             Shader shader,
@@ -263,9 +270,9 @@ public class FormigaRenderer {
 
         Vector3f localPosition =
                 new Vector3f(
-                        side * 0.07f,
-                        0.23f,
-                        -0.34f
+                        side * 0.035f * FORMIGA_SCALE,
+                        0.14f * FORMIGA_SCALE,
+                        -0.18f * FORMIGA_SCALE
                 );
 
         rotateXZ(
@@ -288,9 +295,9 @@ public class FormigaRenderer {
                                         )
                         )
                         .scale(
-                                0.02f,
-                                0.16f,
-                                0.02f
+                                0.01f * FORMIGA_SCALE,
+                                0.08f * FORMIGA_SCALE,
+                                0.01f * FORMIGA_SCALE
                         );
 
         shader.setUniform(
@@ -310,7 +317,7 @@ public class FormigaRenderer {
         cylinder.render();
     }
 
-    // ROTAÇÃO NO PLANO XZ
+    // ROTAÇÃO
 
     private void rotateXZ(
             Vector3f vector,

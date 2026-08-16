@@ -11,11 +11,19 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Main {
 
+    // MOUSE
+
+    private static float lastX = 400f;
+    private static float lastY = 300f;
+
+    private static boolean firstMouse = true;
+
     public static void main(String[] args) {
 
         // GLFW
 
         if (!GLFW.glfwInit()) {
+
             throw new IllegalStateException(
                     "Não foi possível inicializar o GLFW"
             );
@@ -31,6 +39,7 @@ public class Main {
                 );
 
         if (window == 0) {
+
             throw new RuntimeException(
                     "Falha ao criar a janela"
             );
@@ -86,6 +95,9 @@ public class Main {
         Camera camera =
                 new Camera();
 
+        camera.setDistance(0.8f);
+        camera.setHeight(0.3f);
+
         var projection =
                 new org.joml.Matrix4f()
                         .perspective(
@@ -101,7 +113,7 @@ public class Main {
                 projection
         );
 
-        // INPUT
+        // MOUSE
 
         glfwSetInputMode(
                 window,
@@ -109,6 +121,43 @@ public class Main {
                 GLFW_CURSOR_DISABLED
         );
 
+        glfwSetCursorPosCallback(
+                window,
+                (win, xpos, ypos) -> {
+
+                    if (firstMouse) {
+
+                        lastX =
+                                (float) xpos;
+
+                        lastY =
+                                (float) ypos;
+
+                        firstMouse = false;
+                    }
+
+                    float xOffset =
+                            (float) xpos -
+                            lastX;
+
+                    float yOffset =
+                            lastY -
+                            (float) ypos;
+
+                    lastX =
+                            (float) xpos;
+
+                    lastY =
+                            (float) ypos;
+
+                    camera.processMouseMovement(
+                            xOffset,
+                            yOffset
+                    );
+                }
+        );
+
+        // ESC
 
         glfwSetKeyCallback(
                 window,
@@ -177,15 +226,19 @@ public class Main {
                 new Formiga(
                         new Vector3f(
                                 0f,
-                                0.15f,
+                                0.10f,
                                 3f
                         )
                 );
 
+        formiga.setVelocidade(1.0f);
+
+        // RENDERIZADOR DA FORMIGA
+
         FormigaRenderer formigaRenderer =
                 new FormigaRenderer();
 
-        // LOOP PRINCIPAL
+        // LOOP
 
         glfwShowWindow(window);
 
@@ -204,33 +257,38 @@ public class Main {
             float deltaTime =
                     (float)
                             (
-                                    currentFrameTime
-                                            - lastFrameTime
+                                    currentFrameTime -
+                                    lastFrameTime
                             );
 
             lastFrameTime =
                     currentFrameTime;
 
+            if (deltaTime > 0.1f) {
+                deltaTime = 0.1f;
+            }
+
             // INPUT
 
             processInput(
                     window,
+                    camera,
                     formiga,
                     deltaTime
             );
 
-            // CÂMERA
+            // CÂMERA SEGUE A FORMIGA
 
             camera.follow(formiga);
 
             // LIMPA A TELA
 
             glClear(
-                    GL_COLOR_BUFFER_BIT
-                            | GL_DEPTH_BUFFER_BIT
+                    GL_COLOR_BUFFER_BIT |
+                    GL_DEPTH_BUFFER_BIT
             );
 
-            // MATRIZES DA CÂMERA
+            // VIEW
 
             shader.setUniform(
                     "view",
@@ -242,42 +300,45 @@ public class Main {
                     camera.getPosition()
             );
 
-            // RENDERIZA PEDRAS
+            // PEDRAS
 
             for (GameObject obj : sceneObjects) {
 
                 obj.render(shader);
             }
 
-            // RENDERIZA FORMIGA
+            // FORMIGA
 
             formigaRenderer.render(
                     formiga,
                     shader
             );
 
-            // ATUALIZA TELA
+            // ATUALIZA
 
             glfwSwapBuffers(window);
 
             glfwPollEvents();
         }
 
-        // ENCERRA
-
         glfwDestroyWindow(window);
 
         glfwTerminate();
     }
 
-    // CONTROLES DA FORMIGA
+    // CONTROLE DA FORMIGA
 
     private static void processInput(
             long window,
+            Camera camera,
             Formiga formiga,
             float deltaTime
     ) {
 
+        float frente = 0f;
+        float lateral = 0f;
+
+        // W
 
         if (
                 glfwGetKey(
@@ -286,12 +347,10 @@ public class Main {
                 ) == GLFW_PRESS
         ) {
 
-            formiga.andar(
-                    1f,
-                    deltaTime
-            );
+            frente += 1f;
         }
 
+        // S
 
         if (
                 glfwGetKey(
@@ -300,12 +359,10 @@ public class Main {
                 ) == GLFW_PRESS
         ) {
 
-            formiga.andar(
-                    -1f,
-                    deltaTime
-            );
+            frente -= 1f;
         }
 
+        // A
 
         if (
                 glfwGetKey(
@@ -314,12 +371,10 @@ public class Main {
                 ) == GLFW_PRESS
         ) {
 
-            formiga.girar(
-                    -1f,
-                    deltaTime
-            );
+            lateral -= 1f;
         }
 
+        // D
 
         if (
                 glfwGetKey(
@@ -328,8 +383,40 @@ public class Main {
                 ) == GLFW_PRESS
         ) {
 
-            formiga.girar(
-                    1f,
+            lateral += 1f;
+        }
+
+        // CALCULA DIREÇÃO DA CÂMERA
+
+        Vector3f cameraForward =
+                camera.getHorizontalFront();
+
+        Vector3f cameraRight =
+                camera.getRight();
+
+        Vector3f direcao =
+                new Vector3f();
+
+        // W/S
+        direcao.fma(
+                frente,
+                cameraForward
+        );
+
+        // A/D
+        direcao.fma(
+                lateral,
+                cameraRight
+        );
+
+        // MOVIMENTA A FORMIGA
+
+        if (direcao.lengthSquared() > 0.0001f) {
+
+            direcao.normalize();
+
+            formiga.mover(
+                    direcao,
                     deltaTime
             );
         }
