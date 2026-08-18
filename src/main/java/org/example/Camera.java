@@ -8,112 +8,234 @@ public class Camera {
     private final Vector3f position;
     private final Vector3f front;
     private final Vector3f up;
-    private final Vector3f right;
     private final Vector3f worldUp;
 
-    // ângulos de orientação (em graus)
-    private float yaw = -90f;   // -90 pra começar olhando pro -Z (padrão OpenGL)
-    private float pitch = 0f;
+    private float yaw = -90f;
 
-    private float movementSpeed = 0.8f;      // unidades por segundo (formiga é lenta em escala)
-    private float mouseSensitivity = 0.1f;
+    private float pitch = 20f;
 
-    // altura fixa dos "olhos" da formiga — travada, não muda ao andar nem olhar pra cima/baixo
-    private final float eyeHeight;
+    private float distance = 1.8f;
+
+    private float height = 0.7f;
+
+    private float mouseSensitivity = 0.12f;
 
     public Camera() {
-        this(0.12f); // ~escala de formiga (pedra tem ~0.9 de altura, formiga fica bem menor)
-    }
 
-    public Camera(float eyeHeight) {
-        this.eyeHeight = eyeHeight;
-        position = new Vector3f(0, eyeHeight, 6);
-        worldUp = new Vector3f(0, 1, 0);
-        front = new Vector3f(0, 0, -1);
-        up = new Vector3f(worldUp);
-        right = new Vector3f();
+        position =
+                new Vector3f();
+
+        front =
+                new Vector3f(
+                        0f,
+                        0f,
+                        -1f
+                );
+
+        up =
+                new Vector3f(
+                        0f,
+                        1f,
+                        0f
+                );
+
+        worldUp =
+                new Vector3f(
+                        0f,
+                        1f,
+                        0f
+                );
+
         updateVectors();
     }
 
+
     public Matrix4f getViewMatrix() {
+
         return new Matrix4f()
                 .lookAt(
                         position,
-                        new Vector3f(position).add(front),
+                        new Vector3f(position)
+                                .add(front),
                         up
                 );
     }
 
-    // ---- movimentação (WASD) — travada no plano horizontal (chão) ----
+    // MOUSE
 
-    public void moveForward(float deltaTime) {
-        Vector3f flatFront = horizontalFront();
-        position.fma(movementSpeed * deltaTime, flatFront);
-        position.y = eyeHeight; // trava a altura, mesmo com erro de ponto flutuante
-    }
+    public void processMouseMovement(
+            float xOffset,
+            float yOffset
+    ) {
 
-    public void moveBackward(float deltaTime) {
-        Vector3f flatFront = horizontalFront();
-        position.fma(-movementSpeed * deltaTime, flatFront);
-        position.y = eyeHeight;
-    }
+        yaw +=
+                xOffset *
+                mouseSensitivity;
 
-    public void moveLeft(float deltaTime) {
-        // "right" já é sempre horizontal (right = front x worldUp tem y=0 por construção)
-        position.fma(-movementSpeed * deltaTime, right);
-        position.y = eyeHeight;
-    }
+        pitch +=
+                yOffset *
+                mouseSensitivity;
 
-    public void moveRight(float deltaTime) {
-        position.fma(movementSpeed * deltaTime, right);
-        position.y = eyeHeight;
-    }
-
-    // pega o "front" mas zera a componente Y e renormaliza,
-    // assim W/S nunca fazem a formiga "subir voando" quando você olha pra cima
-    private Vector3f horizontalFront() {
-        Vector3f flat = new Vector3f(front.x, 0f, front.z);
-        if (flat.lengthSquared() > 0.0001f) {
-            flat.normalize();
+        if (pitch > 75f) {
+            pitch = 75f;
         }
-        return flat;
-    }
 
-    // ---- olhar em volta (mouse) ----
-
-    public void processMouseMovement(float xOffset, float yOffset) {
-
-        yaw += xOffset * mouseSensitivity;
-        pitch += yOffset * mouseSensitivity;
-
-        // trava o pitch pra não "virar de cabeça pra baixo"
-        if (pitch > 89f) pitch = 89f;
-        if (pitch < -89f) pitch = -89f;
+        if (pitch < -20f) {
+            pitch = -20f;
+        }
 
         updateVectors();
     }
 
+    // ATUALIZA DIREÇÃO DA CÂMERA
+
     private void updateVectors() {
 
-        float yawRad = (float) Math.toRadians(yaw);
-        float pitchRad = (float) Math.toRadians(pitch);
+        float yawRad =
+                (float) Math.toRadians(yaw);
 
-        Vector3f newFront = new Vector3f(
-                (float) (Math.cos(yawRad) * Math.cos(pitchRad)),
-                (float) Math.sin(pitchRad),
-                (float) (Math.sin(yawRad) * Math.cos(pitchRad))
-        );
+        float pitchRad =
+                (float) Math.toRadians(pitch);
 
-        front.set(newFront.normalize());
-        right.set(front).cross(worldUp, right).normalize();
-        up.set(right).cross(front, up).normalize();
+        float x =
+                (float)
+                        (
+                                Math.cos(yawRad) *
+                                Math.cos(pitchRad)
+                        );
+
+        float y =
+                (float)
+                        Math.sin(pitchRad);
+
+        float z =
+                (float)
+                        (
+                                Math.sin(yawRad) *
+                                Math.cos(pitchRad)
+                        );
+
+        front.set(
+                x,
+                y,
+                z
+        ).normalize();
+
+        Vector3f right =
+                new Vector3f(front)
+                        .cross(worldUp)
+                        .normalize();
+
+        up.set(right)
+                .cross(front)
+                .normalize();
     }
+
+    // SEGUE A FORMIGA
+
+    public void follow(Formiga formiga) {
+
+        Vector3f antPosition =
+                formiga.getPosition();
+
+        // DIREÇÃO HORIZONTAL DA CÂMERA
+
+        float yawRad =
+                (float) Math.toRadians(yaw);
+
+        float forwardX =
+                (float) Math.cos(yawRad);
+
+        float forwardZ =
+                (float) Math.sin(yawRad);
+
+        // COLOCA A CÂMERA ATRÁS DA FORMIGA
+
+        position.x =
+                antPosition.x -
+                forwardX * distance;
+
+        position.y =
+                antPosition.y +
+                height;
+
+        position.z =
+                antPosition.z -
+                forwardZ * distance;
+
+        // A CÂMERA OLHA PARA A FORMIGA
+
+        Vector3f target =
+                new Vector3f(
+                        antPosition.x,
+                        antPosition.y + 0.08f,
+                        antPosition.z
+                );
+
+        front.set(
+                target
+        ).sub(position)
+                .normalize();
+
+        // UP
+
+        Vector3f right =
+                new Vector3f(front)
+                        .cross(worldUp)
+                        .normalize();
+
+        up.set(right)
+                .cross(front)
+                .normalize();
+    }
+
+    // DIREÇÃO PARA FRENTE DA CÂMERA
+
+    public Vector3f getHorizontalFront() {
+
+        float yawRad =
+                (float) Math.toRadians(yaw);
+
+        return new Vector3f(
+                (float) Math.cos(yawRad),
+                0f,
+                (float) Math.sin(yawRad)
+        ).normalize();
+    }
+
+    // DIREÇÃO PARA A DIREITA DA CÂMERA
+
+    public Vector3f getRight() {
+
+        Vector3f front =
+                getHorizontalFront();
+
+        return new Vector3f(
+                front.z,
+                0f,
+                -front.x
+        ).normalize();
+    }
+
+    // GETTERS
 
     public Vector3f getPosition() {
         return position;
     }
 
-    public void setMovementSpeed(float speed) {
-        this.movementSpeed = speed;
+    public float getYaw() {
+        return yaw;
+    }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
     }
 }
