@@ -367,7 +367,7 @@ public class Main {
         if (
                 glfwGetKey(
                         window,
-                        GLFW_KEY_A
+                        GLFW_KEY_D
                 ) == GLFW_PRESS
         ) {
 
@@ -379,7 +379,7 @@ public class Main {
         if (
                 glfwGetKey(
                         window,
-                        GLFW_KEY_D
+                        GLFW_KEY_A
                 ) == GLFW_PRESS
         ) {
 
