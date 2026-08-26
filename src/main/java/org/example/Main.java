@@ -371,7 +371,7 @@ public class Main {
                 ) == GLFW_PRESS
         ) {
 
-            lateral -= 1f;
+            lateral += 1f;
         }
 
         // D
@@ -383,7 +383,7 @@ public class Main {
                 ) == GLFW_PRESS
         ) {
 
-            lateral += 1f;
+            lateral -= 1f;
         }
 
         // CALCULA DIREÇÃO DA CÂMERA
