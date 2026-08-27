@@ -215,12 +215,65 @@ public class Main {
         }
     }
 
-    private static void processInput(long window, Camera camera, Formiga formiga, float deltaTime) {
-        float frente = 0f; float lateral = 0f;
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) frente += 1f;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) frente -= 1f;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) lateral -= 1f;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) lateral += 1f;
+    private static void processInput(
+            long window,
+            Camera camera,
+            Formiga formiga,
+            float deltaTime
+    ) {
+
+        float frente = 0f;
+        float lateral = 0f;
+
+        // W
+
+        if (
+                glfwGetKey(
+                        window,
+                        GLFW_KEY_W
+                ) == GLFW_PRESS
+        ) {
+
+            frente += 1f;
+        }
+
+        // S
+
+        if (
+                glfwGetKey(
+                        window,
+                        GLFW_KEY_S
+                ) == GLFW_PRESS
+        ) {
+
+            frente -= 1f;
+        }
+
+        // A
+
+        if (
+                glfwGetKey(
+                        window,
+                        GLFW_KEY_A
+                ) == GLFW_PRESS
+        ) {
+
+            lateral -= 1f;
+        }
+
+        // D
+
+        if (
+                glfwGetKey(
+                        window,
+                        GLFW_KEY_D
+                ) == GLFW_PRESS
+        ) {
+
+            lateral += 1f;
+        }
+
+        // CALCULA DIREÇÃO DA CÂMERA
 
         Vector3f cameraForward = camera.getHorizontalFront();
         Vector3f cameraRight = camera.getRight();
