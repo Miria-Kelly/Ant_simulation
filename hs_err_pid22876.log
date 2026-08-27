@@ -1,0 +1,43 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffe0780c84a, pid=22876, tid=23732
+#
+# JRE version: OpenJDK Runtime Environment (26.0.2+10) (build 26.0.2+10-55)
+# Java VM: OpenJDK 64-Bit Server VM (26.0.2+10-55, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# Problematic frame:
+# V  [jvm.dll+0x38c84a]
+#
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugreport.java.com/bugreport/crash.jsp
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 --enable-native-access=ALL-UNNAMED -Dclassworlds.conf=C:\Users\rafae\AppData\Roaming\Code\User\globalStorage\pleiades.java-extension-pack-jdk\maven\latest\bin\m2.conf -Dmaven.home=C:\Users\rafae\AppData\Roaming\Code\User\globalStorage\pleiades.java-extension-pack-jdk\maven\latest -Dlibrary.jansi.path=C:\Users\rafae\AppData\Roaming\Code\User\globalStorage\pleiades.java-extension-pack-jdk\maven\latest\lib\jansi-native -Dmaven.multiModuleProjectDirectory=C:\Users\rafae\Downloads\Ant_simulation org.codehaus.plexus.classworlds.launcher.Launcher compile exec:java -Dexec.mainClass=org.example.Main
+
+Host: 12th Gen Intel(R) Core(TM) i5-12450H, 12 cores, 7G,  Windows 11 , 64 bit Build 26100 (10.0.26100.6725)
+Time: Thu Aug 27 00:57:21 2026 Hora oficial do Brasil elapsed time: 5.597923 seconds (0d 0h 0m 5s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00000296fb935b80):  JavaThread "C2 CompilerThread0" daemon [_thread_in_vm, id=23732, stack(0x000000f4b2400000,0x000000f4b2500000) (1024K)]
+
+
+Current CompileTask:
+C2:5598 5505 % !   4       org.example.Main::main @ 1221 (1418 bytes)
+
+Stack: [0x000000f4b2400000,0x000000f4b2500000],  sp=0x000000f4b24fc310,  free space=1008k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x38c84a]  (no source info available)
+V  [jvm.dll+0x91c21d]  (no source info available)
+V  [jvm.dll+0x26e005]  (no source info available)
+V  [jvm.dll+0x26df4e]  (no source info available)
+V  [jvm.dll+0x26db94]  (no source info available)
+V  [jvm.dll+0x26da03]  (no source info available)
+V  [jvm.dll+0x270ae9]  (no source info available)
+V  [jvm.dll+0x26d8b5]  (no source info available)
+V  [jvm.dll+0x26d799]  (no source info available)
+V
