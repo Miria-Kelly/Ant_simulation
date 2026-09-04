@@ -170,9 +170,12 @@ public class Main {
             Formiga formiga = new Formiga(new Vector3f(0f, 0.10f, 3f));
             formiga.setVelocidade(1.0f);
             FormigaRenderer formigaRenderer = new FormigaRenderer();
+            Formigueiro formigueiro = new Formigueiro();
+            FormigueiroRenderer formigueiroRenderer = new FormigueiroRenderer();
 
             glfwShowWindow(window);
             double lastFrameTime = glfwGetTime();
+
 
             while (!GLFW.glfwWindowShouldClose(window)) {
                 double currentFrameTime = glfwGetTime();
@@ -184,6 +187,10 @@ public class Main {
                 if (cursorPreso) {
                     processInput(window, camera, formiga, deltaTime);
                     camera.follow(formiga);
+
+                    if (formigueiro.formigaChegou(formiga)) {
+                        formigueiro.mudarLocal();
+                    }
                 }
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -196,6 +203,8 @@ public class Main {
                 for (GameObject obj : sceneObjects) {
                     obj.render(shader);
                 }
+
+                formigueiroRenderer.render(formigueiro, shader);
 
                 formigaRenderer.render(formiga, shader);
 
